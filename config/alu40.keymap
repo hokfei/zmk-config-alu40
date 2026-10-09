@@ -8,6 +8,29 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/rgb.h>
+#include <dt-bindings/zmk/pointing.h>
+
+// Personal macros live in a git-ignored file; fall back to a harmless stub when it is absent (e.g. GitHub builds).
+#if __has_include("private_macros.dtsi")
+#include "private_macros.dtsi"
+#else
+/ {
+    macros {
+        macro0: macro0 {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            display-name = "macro0";
+            bindings = <&macro_tap &none>;
+        };
+        macro1: macro1 {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            display-name = "macro1";
+            bindings = <&macro_tap &none>;
+        };
+    };
+};
+#endif
 
 / {
     keymap {
@@ -16,7 +39,7 @@
         default_layer {
             display-name = "base";
             bindings = <
-                &kp TAB   &kp GRAVE  &kp COMMA  &kp DOT  &kp P      &kp Y      &kp F      &kp G  &kp C      &kp R     &kp L      &kp FSLH
+                &kp TAB   &kp SQT    &kp COMMA  &kp DOT  &kp P      &kp Y      &kp F      &kp G  &kp C      &kp R     &kp L      &kp FSLH
                 &kp BSPC  &kp A      &kp O      &kp E    &kp U      &kp I      &kp D      &kp H  &kp T      &kp N     &kp S      &kp MINUS
                 &kp RET   &kp SEMI   &kp Q      &kp J    &kp K      &kp X      &kp B      &kp M  &kp W      &kp V     &kp Z      &kp EQUAL
                 &mo 4     &kp ESC    &kp LALT   &mo 2    &kp LSHFT  &kp SPACE  &kp SPACE  &mo 3  &kp RCTRL  &kp RGUI  &kp K_APP  &mo 4
@@ -27,8 +50,8 @@
         qwerty {
             display-name = "qwerty";
             bindings = <
-                &kp LS(TAB)  &kp LS(Q)  &kp LS(W)  &kp LS(E)  &kp LS(R)  &kp LS(T)  &kp LS(Y)  &kp LS(U)  &kp LS(I)  &kp LS(O)  &kp LS(P)     &kp BSPC
-                &kp BSPC     &kp A      &kp S      &kp D      &kp F      &kp G      &kp H      &kp LS(J)  &kp LS(K)  &kp LS(L)  &kp LS(SEMI)  &kp SQT
+                &kp TAB      &kp Q      &kp W      &kp E      &kp R      &kp T      &kp Y      &kp U      &kp I      &kp O      &kp P         &kp BSPC
+                                &kp BSPC     &kp A      &kp S      &kp D      &kp F      &kp G      &kp H      &kp J      &kp K      &kp L      &kp SEMI      &kp SQT
                 &kp LSHFT    &kp Z      &kp X      &kp C      &kp V      &kp B      &kp N      &kp M      &kp COMMA  &kp DOT    &kp FSLH      &kp RET
                 &trans       &trans     &trans     &trans     &trans     &trans     &trans     &trans     &trans     &trans     &tog 1        &trans
             >;
@@ -36,9 +59,9 @@
         nav {
             display-name = "nav";
             bindings = <
-                &kp ESC    &kp PG_UP  &kp HOME  &kp UP    &kp END    &kp PSCRN  &trans  &kp F9  &kp F10  &kp F11  &kp F12  &none
-                &kp CAPS   &kp PG_DN  &kp LEFT  &kp DOWN  &kp RIGHT  &trans     &trans  &kp F5  &kp F6   &kp F7   &kp F8   &none
-                &kp LSHFT  &trans     &trans    &kp INS   &kp DEL    &trans     &trans  &kp F1  &kp F2   &kp F3   &kp F4   &none
+                &kp ESC    &kp PG_UP  &kp HOME  &kp UP    &kp END    &kp PSCRN  &trans  &kp F9  &kp F10  &kp F11  &kp F12  &macro0
+                &kp CAPS   &kp PG_DN  &kp LEFT  &kp DOWN  &kp RIGHT  &trans     &trans  &kp F5  &kp F6   &kp F7   &kp F8   &macro1
+                &kp LSHFT  &trans     &trans    &kp INS   &kp DEL    &trans     &trans  &kp F1  &kp F2   &kp F3   &kp F4   &trans
                 &trans     &trans     &trans    &trans    &trans     &trans     &trans  &trans  &trans   &trans   &trans   &trans
             >;
         };
@@ -54,20 +77,29 @@
         media {
             display-name = "media";
             bindings = <
-                &kp C_BRI_INC  &trans  &trans      &kp C_VOL_UP  &kp C_PP    &trans  &trans  &trans  &trans  &trans  &trans  &trans
-                &kp C_BRI_DEC  &trans  &kp C_PREV  &kp C_VOL_DN  &kp C_NEXT  &none   &none   &none   &none   &none   &trans  &trans
-                &mo 5          &trans  &trans      &kp C_MUTE    &trans      &none   &none   &none   &none   &none   &none   &trans
-                &trans         &trans  &trans      &trans        &trans      &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                &kp C_BRI_INC  &trans  &trans      &kp C_VOL_UP  &kp C_PP    &trans  &mkp MCLK  &mkp LCLK       &mmv MOVE_UP    &mkp RCLK        &trans         &trans
+                &kp C_BRI_DEC  &trans  &kp C_PREV  &kp C_VOL_DN  &kp C_NEXT  &trans  &mkp MB4   &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_RIGHT  &msc SCRL_UP   &trans
+                &mo 5          &trans  &trans      &kp C_MUTE    &trans      &trans  &mkp MB5   &trans          &trans          &msc SCRL_LEFT  &msc SCRL_DOWN  &msc SCRL_RIGHT
+                &trans         &trans  &trans      &trans        &trans      &trans  &trans     &trans          &trans          &trans           &trans         &trans
             >;
         };
         system {
             display-name = "system";
             bindings = <
-                &bt BT_CLR      &bt BT_SEL 1     &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_SEL 5  &none  &rgb_ug RGB_SPI  &rgb_ug RGB_BRI  &rgb_ug RGB_SAI  &rgb_ug RGB_HUI  &rgb_ug RGB_EFF
-                &studio_unlock  &rgb_ug RGB_TOG  &none         &none         &none         &none         &none  &rgb_ug RGB_SPD  &rgb_ug RGB_BRD  &rgb_ug RGB_SAD  &rgb_ug RGB_HUD  &rgb_ug RGB_EFR
-                &trans          &none            &none         &none         &none         &none         &none  &none            &none            &none            &none            &none
-                &trans          &none            &none         &none         &sys_reset    &bootloader   &none  &bootloader      &none            &none            &none            &none
+                &bt BT_CLR      &bt BT_SEL 1     &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_SEL 5  &trans  &rgb_ug RGB_SPI  &rgb_ug RGB_BRI  &rgb_ug RGB_SAI  &rgb_ug RGB_HUI  &rgb_ug RGB_EFF
+                &studio_unlock  &rgb_ug RGB_TOG  &trans  &trans  &trans  &trans  &trans  &rgb_ug RGB_SPD  &rgb_ug RGB_BRD  &rgb_ug RGB_SAD  &rgb_ug RGB_HUD  &rgb_ug RGB_EFR
+                &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                &trans  &trans  &trans  &trans  &sys_reset  &bootloader  &trans  &bootloader  &trans  &trans  &trans  &trans
             >;
+        };
+        extra1 {
+            status = "reserved";
+        };
+        extra2 {
+            status = "reserved";
+        };
+        extra3 {
+            status = "reserved";
         };
     };
 };
