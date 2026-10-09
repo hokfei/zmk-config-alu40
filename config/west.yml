@@ -9,7 +9,7 @@ manifest:
       clone-depth: 1
     - name: zmk
       remote: zmkfirmware
-      revision: main
+      revision: abb64ba316c29caddc49727ca2cac2f0ed5970c7
       import: app/west.yml
   self:
     path: config
