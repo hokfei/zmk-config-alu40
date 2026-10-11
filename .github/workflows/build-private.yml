@@ -1,6 +1,7 @@
 name: Build ZMK firmware with private macros
-# Manual only. Macro text comes from repository secrets and the firmware is
-# uploaded encrypted, because artifacts of a public repo are world-downloadable.
+# Manual only. Macro text comes from repository secrets. The uploaded firmware is
+# NOT encrypted, so on a public repo its macro text is readable by anyone who can
+# download artifacts. Delete the run when finished.
 on: workflow_dispatch
 
 jobs:
@@ -9,12 +10,6 @@ jobs:
     container: zmkfirmware/zmk-build-arm:stable
     steps:
       - uses: actions/checkout@v4
-
-      - name: Check secrets
-        env:
-          MACRO_PASSPHRASE: ${{ secrets.MACRO_PASSPHRASE }}
-        run: |
-          [ -n "$MACRO_PASSPHRASE" ] || { echo "Missing MACRO_PASSPHRASE secret"; exit 1; }
 
       - name: Generate private macros
         env:
@@ -33,16 +28,8 @@ jobs:
           west build -s zmk/app -d build/studio -b alu40 -S studio-rpc-usb-uart
           -- -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" -DCONFIG_ZMK_STUDIO=y
 
-      - name: Encrypt firmware
-        env:
-          MACRO_PASSPHRASE: ${{ secrets.MACRO_PASSPHRASE }}
-        run: >
-          openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt
-          -in build/studio/zephyr/zmk.uf2 -out alu40-studio-private.uf2.enc
-          -pass env:MACRO_PASSPHRASE
-
       - uses: actions/upload-artifact@v4
         with:
-          name: alu40-studio-private-encrypted
-          path: alu40-studio-private.uf2.enc
-          retention-days: 3
+          name: alu40-studio-private
+          path: build/studio/zephyr/zmk.uf2
+          retention-days: 1
